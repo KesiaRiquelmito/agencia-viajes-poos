@@ -1,5 +1,6 @@
 from exceptions.database import DatabaseError, AlreadyExistsError
 from services.destination_service import DestinationService
+from tabulate import tabulate
 
 
 class DestinationController:
@@ -17,6 +18,19 @@ class DestinationController:
             print("El costo debe ser un número >= 0.")
             return False
         return True
+
+    def _tabulate_data(self, data):
+        headers = ["ID", "Nombre", "Descripción", "Actividades", "Costo"]
+        table = []
+        for dest in data:
+            table.append([
+                dest.id,
+                dest.name,
+                dest.description,
+                ", ".join(dest.activities),
+                dest.cost
+            ])
+        return tabulate(table, headers, tablefmt="grid")
 
     def create_destination(self):
         name = input("Ingrese el nombre del destino: ").strip()
@@ -48,3 +62,17 @@ class DestinationController:
 
         print(f"Destino '{name}' creado exitosamente.")
         return destination_id
+
+    def list_destinations(self):
+        try:
+            destinations = self.destination_service.get_all_destinations()
+        except DatabaseError:
+            print("No se pudieron obtener los destinos debido a un error en la base de datos.")
+            return
+
+        if not destinations:
+            print("No hay destinos disponibles.")
+            return
+
+        table = self._tabulate_data(destinations)
+        print(table)

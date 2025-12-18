@@ -16,3 +16,6 @@ class DestinationService:
             destination_data["cost"],
         )
         return self.destination_dao.save(destination)
+
+    def get_all_destinations(self):
+        return self.destination_dao.get_all()

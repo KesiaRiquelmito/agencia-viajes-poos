@@ -8,4 +8,4 @@ class Menu:
         self.destination_controller = DestinationController(self.db)
 
     def start(self):
-        self.destination_controller.create_destination()
+        self.destination_controller.list_destinations()

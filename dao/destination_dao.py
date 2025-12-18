@@ -8,16 +8,23 @@ class DestinationDAO:
     def __init__(self, db_connection):
         self.db_connection = db_connection
 
-    @staticmethod
-    def list_destinations(db):
+    def get_all(self):
         try:
-            rows = db.fetch_all("SELECT id, name, description, activities, cost FROM destinations")
+            rows = self.db_connection.fetch_all("SELECT id, name, description, activities, cost FROM destinations")
             destinations = []
             for row in rows:
-                destination_id, name, description, activities_json, cost = row
+                id_, name, description, activities_json, cost = row
+
                 activities = json.loads(activities_json)
-                destination = Destination(name, description, activities, cost)
-                destinations.append((destination_id, destination))
+
+                destination = Destination(
+                    name=name,
+                    description=description,
+                    activities=activities,
+                    cost=cost,
+                )
+                destination.id = id_
+                destinations.append(destination)
             return destinations
         except DatabaseError:
             raise
