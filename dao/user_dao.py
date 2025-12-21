@@ -30,7 +30,7 @@ class UserDAO:
     def get_credentials(self, email):
         try:
             rows = self.db_connection.fetch_all(
-                "SELECT email, hashed_password, role FROM users WHERE email = %s",
+                "SELECT id, email, hashed_password, role FROM users WHERE email = %s",
                 (email,),
             )
             return rows[0]
