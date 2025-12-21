@@ -74,6 +74,9 @@ class UserController:
             return None
         except UserNotFound:
             print(f"El usuario con el email {email} no existe")
+            return None
         except InvalidPassword:
             print("La contraseña no es correcta, intenta nuevamente")
+            return None
+        print("Inicio de sesión exitoso")
         return user_credentials
