@@ -28,3 +28,6 @@ class DestinationService:
             destination_data["cost"],
         )
         return self.destination_dao.update(target, destination)
+
+    def delete_destination(self, destination_id):
+        return self.destination_dao.delete(destination_id)

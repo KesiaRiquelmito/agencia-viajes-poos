@@ -1,6 +1,6 @@
 import json
 
-from exceptions.database import DatabaseError, AlreadyExistsError, DestinationNotFound
+from exceptions.database import DatabaseError, AlreadyExistsError, DestinationNotFound, DeletionNotCompleted
 from services.destination_service import DestinationService
 from tabulate import tabulate
 
@@ -86,6 +86,23 @@ class DestinationController:
 
         print(f"Destino creado exitosamente.")
         return destination_id
+
+    def delete_destination(self):
+        self.list_destinations()
+        destination_id = int(input("Ingrese el ID del destino que desea eliminar").strip())
+        try:
+            deleted = self.destination_service.delete_destination(destination_id)
+        except DestinationNotFound:
+            print("No se encontró el destino ingresado")
+            return None
+        except DeletionNotCompleted:
+            print("No se pudo eliminar el destino")
+            return None
+        except DatabaseError:
+            print("No se pudo eliminar el destino debido a un error en la base de datos.")
+            return None
+        print("Destino eliminado.")
+        return deleted
 
     def list_destinations(self):
         try:
