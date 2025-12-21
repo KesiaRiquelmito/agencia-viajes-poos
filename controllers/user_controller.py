@@ -38,7 +38,7 @@ class UserController:
         last_name = input("Apellido: ").strip()
         email = input("Email: ").strip()
         role = input("Rol: ").strip()
-        password = input("Ingrese una contraseña: ")
+        password = pwinput.pwinput("Ingrese una contraseña: ", mask="*")
         hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt(14))
         hashed_password = hashed_password.decode('utf-8')
 
@@ -54,7 +54,7 @@ class UserController:
         try:
             user_id = self.user_service.register_user(user_data)
         except AlreadyExistsError:
-            print(f"El usuario con el email '{email}' ya existe")
+            print(f"No se puede crear el usuario. El usuario con el email '{email}' ya existe")
             return None
         except DatabaseError:
             print("No se pudo registrar el usuario debido a un error en la base de datos")
@@ -64,7 +64,7 @@ class UserController:
         return user_id
 
     def signin(self):
-        print("Inicio de sesión")
+        print("---Inicio de sesión---")
         email = input("Ingresa tu email: ")
         password = pwinput.pwinput("Ingresa tu contraseña: ", mask="*")
 
