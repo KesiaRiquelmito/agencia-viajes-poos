@@ -25,4 +25,3 @@ class UserService:
         is_valid_password = bcrypt.checkpw(password.encode('utf-8'), user_hashed_password.encode('utf-8'))
         if not is_valid_password:
             raise InvalidPassword
-        print(user_email, user_hashed_password, role)
