@@ -13,3 +13,6 @@ class InvalidPassword(Exception):
 
 class DestinationNotFound(Exception):
     pass
+
+class DeletionNotCompleted(Exception):
+    pass
