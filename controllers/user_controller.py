@@ -1,4 +1,5 @@
 import bcrypt
+import pwinput
 
 from exceptions.database import AlreadyExistsError, DatabaseError, UserNotFound, InvalidPassword
 from services.user_service import UserService
@@ -65,7 +66,7 @@ class UserController:
     def signin(self):
         print("Inicio de sesión")
         email = input("Ingresa tu email: ")
-        password = input("Ingresa tu contraseña: ")
+        password = pwinput.pwinput("Ingresa tu contraseña: ", mask="*")
 
         try:
             user_credentials = self.user_service.login(email, password)
