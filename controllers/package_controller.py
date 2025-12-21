@@ -1,5 +1,7 @@
 from datetime import datetime
 
+from tabulate import tabulate
+
 from exceptions.database import AlreadyExistsError, DatabaseError
 from services.destination_service import DestinationService
 from services.package_service import PackageService
@@ -18,6 +20,23 @@ class PackageController:
             print("Error: la fechas son obligatorias para crear un paquete turistico")
             return False
         return True
+
+    def _tabulate_data(self, data):
+        headers = ["ID", "Nombre", "Fecha inicio", "Fecha termino", "Destinos", "Precio total"]
+        table = []
+        for package in data:
+            destinations = package["destinations"]
+            destinations_text = ", ".join(destinations) if destinations else "(Sin destinos)"
+
+            table.append([
+                package["id"],
+                package["name"],
+                package["start_date"],
+                package["end_date"],
+                destinations_text,
+                package["total_price"],
+            ])
+        return tabulate(table, headers, tablefmt="grid")
 
     def _input_package_data(self):
         name = input("Ingrese el nombre del paquete turistico: ").strip()
@@ -63,3 +82,15 @@ class PackageController:
             return None
         print("Paquete creado exitosamente")
         return package_id
+
+    def list_packages(self):
+        try:
+            packages = self.package_service.get_packages_summary()
+        except DatabaseError:
+            print("No se pudieron obtener los paquetes turisticos debido a un error en la base de datos")
+            return
+        if not packages:
+            print("No hay paquetes turisticos disponibles")
+            return
+        table = self._tabulate_data(packages)
+        print(table)
