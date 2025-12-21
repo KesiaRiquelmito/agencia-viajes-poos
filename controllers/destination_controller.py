@@ -1,4 +1,6 @@
-from exceptions.database import DatabaseError, AlreadyExistsError
+import json
+
+from exceptions.database import DatabaseError, AlreadyExistsError, DestinationNotFound
 from services.destination_service import DestinationService
 from tabulate import tabulate
 
@@ -32,7 +34,7 @@ class DestinationController:
             ])
         return tabulate(table, headers, tablefmt="grid")
 
-    def create_destination(self):
+    def _input_destination_data(self):
         name = input("Ingrese el nombre del destino: ").strip()
         description = input("Ingrese la descripción del destino: ").strip()
 
@@ -46,21 +48,43 @@ class DestinationController:
             print("El costo debe ser un número.")
             return None
 
-        destination_data = {"name": name, "description": description, "activities": activities, "cost": cost}
+        destination_data = {"name": name, "description": description, "activities": json.dumps(activities),
+                            "cost": cost}
 
         if not self._validate_data(destination_data):
             return None
+        return destination_data
+
+    def update_destination(self):
+        self.list_destinations()
+        target = int(input("Ingrese el ID del destino que desea actualizar: ").strip())
+        destination_data = self._input_destination_data()
+
+        try:
+            updated = self.destination_service.update_destination(target, destination_data)
+        except DestinationNotFound:
+            print("El destino a actualizar no existe en la base de datos.")
+            return None
+        except DatabaseError:
+            print("No se pudo actualizar el destino debido a un error en la base de datos.")
+            return None
+
+        print(f"Destino actualizado exitosamente.")
+        return updated
+
+    def create_destination(self):
+        destination_data = self._input_destination_data()
 
         try:
             destination_id = self.destination_service.create_destination(destination_data)
         except AlreadyExistsError:
-            print(f"El destino con nombre '{name}' ya existe.")
+            print(f"El destino ya existe.")
             return None
         except DatabaseError:
             print("No se pudo crear el destino debido a un error en la base de datos.")
             return None
 
-        print(f"Destino '{name}' creado exitosamente.")
+        print(f"Destino creado exitosamente.")
         return destination_id
 
     def list_destinations(self):

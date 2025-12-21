@@ -4,3 +4,6 @@ class DatabaseError(Exception):
 
 class AlreadyExistsError(Exception):
     pass
+
+class DestinationNotFound(Exception):
+    pass
