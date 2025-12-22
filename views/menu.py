@@ -19,20 +19,24 @@ class Menu:
         if credentials:
             self.current_user = credentials
 
-    def require_role(current_user, allowed_roles):
+    def require_role(self, current_user, allowed_roles):
         if not current_user:
             print("Debes iniciar sesión primero")
+            self.login_flow()
+
+        if not self.current_user:
             return False
-        if current_user["role"] not in allowed_roles:
+
+        if self.current_user["role"] not in allowed_roles:
             print("No tienes permisos para esta accion")
             return False
         return True
 
     def start(self):
-        # self.create_reservation_action()
+        self.create_reservation_action()
         # self.destination_controller.list_destinations()
         # self.user_controller.signin()
-        # self.user_controller.register_user()
+        self.user_controller.register_user()
         self.package_controller.list_packages()
 
     def create_destination_action(self):
