@@ -40,6 +40,10 @@ class UserDAO:
                 "SELECT id, email, hashed_password, role FROM users WHERE email = %s",
                 (email,),
             )
-            return rows[0]
-        except UserNotFound:
+        except DatabaseError:
             raise
+
+        if not rows:
+            raise UserNotFound
+
+        return rows[0]
