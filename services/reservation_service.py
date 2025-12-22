@@ -5,7 +5,7 @@ from models.reservation import Reservation
 class ReservationService:
     def __init__(self, db):
         self.db = db
-        self.reservation_dao = ReservationDAO
+        self.reservation_dao = ReservationDAO(db)
 
     def create_reservation(self, reservation_data):
         reservation = Reservation(
