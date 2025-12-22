@@ -5,13 +5,20 @@ class DatabaseError(Exception):
 class AlreadyExistsError(Exception):
     pass
 
+
 class UserNotFound(Exception):
     pass
+
 
 class InvalidPassword(Exception):
     pass
 
+
 class DestinationNotFound(Exception):
+    pass
+
+
+class ReservationNotFound(Exception):
     pass
 
 class DeletionNotCompleted(Exception):
