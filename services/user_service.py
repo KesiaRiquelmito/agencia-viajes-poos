@@ -21,7 +21,8 @@ class UserService:
         return self.user_dao.create_user(user)
 
     def login(self, email, password):
-        user_email, user_hashed_password, role = self.user_dao.get_credentials(email)
+        user_id, user_email, user_hashed_password, role = self.user_dao.get_credentials(email)
         is_valid_password = bcrypt.checkpw(password.encode('utf-8'), user_hashed_password.encode('utf-8'))
         if not is_valid_password:
             raise InvalidPassword
+        return {"id": user_id, "email": user_email, "role": role}
