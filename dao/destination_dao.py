@@ -1,6 +1,6 @@
 import json
 
-from exceptions.database import DatabaseError, AlreadyExistsError, DestinationNotFound
+from exceptions.database import DatabaseError, AlreadyExistsError, DestinationNotFound, DeletionNotCompleted
 from models.destination import Destination
 
 
@@ -42,6 +42,23 @@ class DestinationDAO:
                 (destination.name, destination.description, destination.activities, destination.cost, destination_id)
             )
             return update
+        except DatabaseError:
+            raise
+
+    def delete(self, destination_id):
+        try:
+            exists = self.db_connection.fetch_all(
+                "SELECT id FROM destinations WHERE id = %s", (destination_id,)
+            )
+            if not exists:
+                raise DestinationNotFound
+            deleted = self.db_connection.execute(
+                "DELETE FROM destinations WHERE id = %s",
+                (destination_id,)
+            )
+            if not deleted:
+                raise DeletionNotCompleted
+            return deleted
         except DatabaseError:
             raise
 

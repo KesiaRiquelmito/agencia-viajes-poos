@@ -20,3 +20,6 @@ class DestinationNotFound(Exception):
 
 class ReservationNotFound(Exception):
     pass
+
+class DeletionNotCompleted(Exception):
+    pass
