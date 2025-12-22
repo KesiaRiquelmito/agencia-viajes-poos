@@ -85,6 +85,7 @@ class PackageController:
 
     def list_packages(self):
         try:
+            print("---Paquetes disponibles para reservas---")
             packages = self.package_service.get_packages_summary()
         except DatabaseError:
             print("No se pudieron obtener los paquetes turisticos debido a un error en la base de datos")

@@ -28,7 +28,6 @@ class ReservationController:
 
     def _input_reservation_data(self):
         print("---Sistema de reservas---")
-        print("Paquetes disponibles para reservas")
         self.package_controller.list_packages()
         package_id = int(input("Escribe el id del paquete turistico a reservar: ").strip())
         reservation_date = date.today()
