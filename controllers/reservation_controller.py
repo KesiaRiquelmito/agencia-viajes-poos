@@ -66,5 +66,5 @@ class ReservationController:
             print(table)
         except ReservationNotFound:
             print("No tienes reservas realizadas")
-        except Exception as e:
-            print(f"Error al obtener las reservas: {str(e)}")
+        except DatabaseError:
+            print("No se pudieron obtener las reservas debido a un error en la base de datos")

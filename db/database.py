@@ -4,6 +4,8 @@ import sys
 import mysql.connector
 from mysql.connector import Error
 
+from exceptions.database import DatabaseError
+
 
 class Database:
     """Provide connection helpers plus schema creation."""
@@ -187,17 +189,23 @@ class Database:
         for stmt in stmts:
             self.cursor.execute(stmt)
         self.connection.commit()
-        print("Base de datos y tablas creadas correctamente.")
 
     def execute(self, query, params=()):
         """Run a mutation query and return cursor."""
         cursor = self.connection.cursor()
-        cursor.execute(query, params)
-        self.connection.commit()
-        return cursor
+        try:
+            cursor.execute(query, params)
+            self.connection.commit()
+            return cursor
+        except Error as e:
+            self.connection.rollback()
+            raise DatabaseError(str(e))
 
     def fetch_all(self, query, params=()):
         """Execute a SELECT statement and return rows."""
         cursor = self.connection.cursor()
-        cursor.execute(query, params)
-        return cursor.fetchall()
+        try:
+            cursor.execute(query, params)
+            return cursor.fetchall()
+        except Error as e:
+            raise DatabaseError(str(e))

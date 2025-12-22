@@ -50,6 +50,9 @@ class PackageController:
         name = input("Ingrese el nombre del paquete turistico: ").strip()
         start_date = datetime.strptime(input("Fecha inicio (dd-mm-YYYY): "), "%d-%m-%Y").date()
         end_date = datetime.strptime(input("Ingrese la fecha de termino (dd-mm-YYYY): "), "%d-%m-%Y").date()
+        if end_date < start_date:
+            print("La fecha de término no puede ser anterior a la fecha de inicio.")
+            return None
         destinations = self.destination_service.get_all_destinations()
         if not destinations:
             print("No hay destinos creados. Cree destinos antes de crear un paquete turistico")
