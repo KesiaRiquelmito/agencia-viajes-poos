@@ -1,0 +1,1 @@
+Para la conexión a la base de datos, debe cambiar las credenciales presentes en la clase Database (db/database.py), en el método get_connection.
