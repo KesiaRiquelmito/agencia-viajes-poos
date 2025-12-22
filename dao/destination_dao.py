@@ -22,6 +22,11 @@ class DestinationDAO:
                 id_, name, description, activities_json, cost = row
 
                 activities = json.loads(activities_json)
+                if isinstance(activities, str):
+                    try:
+                        activities = json.loads(activities)
+                    except json.JSONDecodeError:
+                        activities = [activities]
 
                 destination = Destination(
                     name=name,
@@ -46,7 +51,7 @@ class DestinationDAO:
                 raise DestinationNotFound
             update = self.db_connection.execute(
                 "UPDATE destinations SET name=%s, description=%s,activities=%s, cost=%s WHERE id=%s",
-                (destination.name, destination.description, destination.activities, destination.cost, destination_id)
+                (destination.name, destination.description, json.dumps(destination.activities), destination.cost, destination_id)
             )
             return update
         except DatabaseError:

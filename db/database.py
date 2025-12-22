@@ -22,7 +22,7 @@ class Database:
                 user="root",
                 password="qawsedr123",
                 host="localhost",
-                database="travel_agency",
+                database="travel",
                 auth_plugin="mysql_native_password",
             )
             cursor = connection.cursor()

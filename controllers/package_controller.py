@@ -34,6 +34,7 @@ class PackageController:
         for package in data:
             destinations = package["destinations"]
             destinations_text = ", ".join(destinations) if destinations else "(Sin destinos)"
+            formatted_price = f"{float(package['total_price']):.2f}"
 
             table.append([
                 package["id"],
@@ -41,9 +42,9 @@ class PackageController:
                 package["start_date"],
                 package["end_date"],
                 destinations_text,
-                package["total_price"],
+                formatted_price,
             ])
-        return tabulate(table, headers, tablefmt="grid")
+        return tabulate(table, headers, tablefmt="grid", disable_numparse=True)
 
     def _input_package_data(self):
         """Collect package fields from the CLI and compute totals."""
@@ -92,8 +93,74 @@ class PackageController:
         except DatabaseError:
             print("No se pudo crear el paquete debido a un error en la base de datos")
             return None
+        except Exception as e:
+            return None
         print("Paquete creado exitosamente")
         return package_id
+
+    def update_package(self):
+        """Allow editing a package and its destinations."""
+        try:
+            packages = self.package_service.get_packages_summary()
+        except DatabaseError:
+            print("No se pudieron obtener los paquetes turisticos debido a un error en la base de datos")
+            return None
+
+        if not packages:
+            print("No hay paquetes turisticos disponibles")
+            return None
+
+        self.list_packages()
+        try:
+            package_id = int(input("Ingrese el ID del paquete a editar: ").strip())
+        except ValueError:
+            print("ID inválido")
+            return None
+
+        package_data = self._input_package_data()
+        if not package_data:
+            return None
+
+        try:
+            updated = self.package_service.update_package(package_id, package_data)
+            if not updated:
+                print("El paquete no existe")
+                return None
+        except DatabaseError:
+            print("No se pudo actualizar el paquete debido a un error en la base de datos")
+            return None
+        print("Paquete actualizado exitosamente")
+        return updated
+
+    def delete_package(self):
+        """Delete a package by ID."""
+        try:
+            packages = self.package_service.get_packages_summary()
+        except DatabaseError:
+            print("No se pudieron obtener los paquetes turisticos debido a un error en la base de datos")
+            return None
+
+        if not packages:
+            print("No hay paquetes turisticos disponibles")
+            return None
+
+        self.list_packages()
+        try:
+            package_id = int(input("Ingrese el ID del paquete a eliminar: ").strip())
+        except ValueError:
+            print("ID inválido")
+            return None
+
+        try:
+            deleted = self.package_service.delete_package(package_id)
+            if not deleted:
+                print("El paquete no existe")
+                return None
+        except DatabaseError:
+            print("No se pudo eliminar el paquete debido a un error en la base de datos")
+            return None
+        print("Paquete eliminado")
+        return deleted
 
     def list_packages(self):
         """List package summaries ready for reservation."""

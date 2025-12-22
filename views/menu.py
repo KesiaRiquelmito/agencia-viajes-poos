@@ -92,6 +92,10 @@ class Menu:
                     elif option == "3":
                         self.create_package_action()
                     elif option == "4":
+                        self.manage_destination_action()
+                    elif option == "5":
+                        self.manage_package_action()
+                    elif option == "6":
                         self.logout()
                     elif option == "0":
                         break
@@ -128,7 +132,9 @@ class Menu:
             "1. Ver paquetes turísticos\n"
             "2. Crear destino\n"
             "3. Crear paquete\n"
-            "4. Cerrar sesion\n"
+            "4. Editar o eliminar destino\n"
+            "5. Editar o eliminar paquete\n"
+            "6. Cerrar sesion\n"
             "0. Salir"
         )
 
@@ -157,6 +163,34 @@ class Menu:
         if not self.require_role(self.current_user, ["admin"]):
             return
         self.package_controller.create_package()
+
+    def manage_destination_action(self):
+        """Ensure admin role before destination edits/deletions."""
+        if not self.require_role(self.current_user, ["admin"]):
+            return
+
+        print("\n1. Editar destino\n2. Eliminar destino")
+        action = input("Selecciona una opción: ").strip()
+        if action == "1":
+            self.destination_controller.update_destination()
+        elif action == "2":
+            self.destination_controller.delete_destination()
+        else:
+            print("Opción invalida")
+
+    def manage_package_action(self):
+        """Ensure admin role before package edits/deletions."""
+        if not self.require_role(self.current_user, ["admin"]):
+            return
+
+        print("\n1. Editar paquete\n2. Eliminar paquete")
+        action = input("Selecciona una opción: ").strip()
+        if action == "1":
+            self.package_controller.update_package()
+        elif action == "2":
+            self.package_controller.delete_package()
+        else:
+            print("Opción invalida")
 
     def get_tourist_packages_action(self):
         """List packages for display."""

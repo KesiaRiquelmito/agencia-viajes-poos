@@ -1,7 +1,5 @@
 """Controller layer for destination CLI operations."""
 
-import json
-
 from exceptions.database import DatabaseError, AlreadyExistsError, DestinationNotFound, DeletionNotCompleted
 from services.destination_service import DestinationService
 from tabulate import tabulate
@@ -56,7 +54,7 @@ class DestinationController:
             print("El costo debe ser un número.")
             return None
 
-        destination_data = {"name": name, "description": description, "activities": json.dumps(activities),
+        destination_data = {"name": name, "description": description, "activities": activities,
                             "cost": cost}
 
         if not self._validate_data(destination_data):
@@ -65,7 +63,9 @@ class DestinationController:
 
     def update_destination(self):
         """Interactive flow to update a destination record."""
-        self.list_destinations()
+        available_destinations = self.list_destinations()
+        if not available_destinations:
+            return None
         target = int(input("Ingrese el ID del destino que desea actualizar: ").strip())
         destination_data = self._input_destination_data()
 
@@ -99,8 +99,14 @@ class DestinationController:
 
     def delete_destination(self):
         """Interactive flow to delete an existing destination."""
-        self.list_destinations()
-        destination_id = int(input("Ingrese el ID del destino que desea eliminar").strip())
+        available_destinations = self.list_destinations()
+        if not available_destinations:
+            return None
+        try:
+            destination_id = int(input("Ingrese el ID del destino que desea eliminar: ").strip())
+        except ValueError:
+            print("ID inválido")
+            return None
         try:
             deleted = self.destination_service.delete_destination(destination_id)
         except DestinationNotFound:
@@ -121,11 +127,12 @@ class DestinationController:
             destinations = self.destination_service.get_all_destinations()
         except DatabaseError:
             print("No se pudieron obtener los destinos debido a un error en la base de datos.")
-            return
+            return None
 
         if not destinations:
             print("No hay destinos disponibles.")
-            return
+            return None
 
         table = self._tabulate_data(destinations)
         print(table)
+        return destinations

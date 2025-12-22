@@ -1,6 +1,6 @@
 """DAO for package persistence and relations."""
 
-from exceptions.database import AlreadyExistsError, DatabaseError
+from exceptions.database import AlreadyExistsError, DatabaseError, DeletionNotCompleted
 
 
 class PackageDAO:
@@ -34,6 +34,7 @@ class PackageDAO:
                     "INSERT INTO package_destinations (package_id, destination_id) VALUES (%s, %s)",
                     (package_id, destination_id)
                 )
+            return package_id
         except DatabaseError:
             raise
 
@@ -53,5 +54,41 @@ class PackageDAO:
                 "SELECT d.name FROM package_destinations pd JOIN destinations d ON d.id = pd.destination_id WHERE pd.package_id = %s", (package_id,),
             )
             return rows
+        except DatabaseError:
+            raise
+
+    def update(self, package_id, package, destination_ids):
+        """Update package basic data plus its destination links."""
+        try:
+            exists = self.db_connection.fetch_all("SELECT id FROM package WHERE id = %s", (package_id,))
+            if not exists:
+                return None
+
+            self.db_connection.execute(
+                "UPDATE package SET name = %s, start_date = %s, end_date = %s, total_price = %s WHERE id = %s",
+                (package.name, package.start_date, package.end_date, package.total_price, package_id),
+            )
+            self.db_connection.execute("DELETE FROM package_destinations WHERE package_id = %s", (package_id,))
+            for destination_id in destination_ids:
+                self.db_connection.execute(
+                    "INSERT INTO package_destinations (package_id, destination_id) VALUES (%s, %s)",
+                    (package_id, destination_id),
+                )
+            return package_id
+        except DatabaseError:
+            raise
+
+    def delete(self, package_id):
+        """Delete a package and its destination relationships."""
+        try:
+            exists = self.db_connection.fetch_all("SELECT id FROM package WHERE id = %s", (package_id,))
+            if not exists:
+                return None
+
+            self.db_connection.execute("DELETE FROM package_destinations WHERE package_id = %s", (package_id,))
+            cursor = self.db_connection.execute("DELETE FROM package WHERE id = %s", (package_id,))
+            if cursor.rowcount == 0:
+                raise DeletionNotCompleted
+            return package_id
         except DatabaseError:
             raise

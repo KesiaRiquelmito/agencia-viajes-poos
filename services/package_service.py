@@ -39,3 +39,17 @@ class PackageService:
                 "total_price": total_price,
             })
         return result
+
+    def update_package(self, package_id, package_data):
+        """Update a package and its destination links."""
+        package = TouristPackage(
+            package_data["name"],
+            package_data["start_date"],
+            package_data["end_date"],
+            package_data["total_price"],
+        )
+        return self.package_dao.update(package_id, package, package_data["destinations"])
+
+    def delete_package(self, package_id):
+        """Delete package by id."""
+        return self.package_dao.delete(package_id)
