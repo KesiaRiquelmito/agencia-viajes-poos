@@ -67,6 +67,8 @@ class Menu:
                         self.get_user_reservations()
                     elif option == "4":
                         self.logout()
+                    elif option == "0":
+                        break
                     else:
                         print("Opcion invalida")
                 elif role == "admin":
