@@ -38,6 +38,7 @@ class Menu:
 
     def start(self):
         while True:
+            print("Bienvenido al sistema de reserva de paquetes turísticos")
             if not self.current_user:
                 self.show_public_menu()
                 option = input("Elige una opción: ").strip()
