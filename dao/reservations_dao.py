@@ -8,11 +8,10 @@ class ReservationDAO:
 
     def get_reservations_by_user(self, user_id: int):
         try:
-            cursor = self.db_connection.execute(
+            rows = self.db_connection.fetch_all(
                 "SELECT id, user_id, package_id, reservation_date, status FROM reservations WHERE user_id = %s",
                 (user_id,),
             )
-            rows = cursor.fetchall()
             if not rows:
                 raise ReservationNotFound
             reservations = []

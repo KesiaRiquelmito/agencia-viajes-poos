@@ -37,7 +37,7 @@ class UserController:
         name = input("Nombre: ").strip()
         last_name = input("Apellido: ").strip()
         email = input("Email: ").strip()
-        role = input("Rol: ").strip()
+        role = input("Rol (admin/user): ").strip()
         password = pwinput.pwinput("Ingrese una contraseña: ", mask="*")
         hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt(14))
         hashed_password = hashed_password.decode('utf-8')
