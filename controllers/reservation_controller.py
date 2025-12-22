@@ -1,3 +1,5 @@
+"""Controller managing reservation flows."""
+
 from datetime import date
 
 from tabulate import tabulate
@@ -9,11 +11,15 @@ from services.reservation_service import ReservationService
 
 
 class ReservationController:
+    """Provide reservation creation and listing CLI actions."""
+
     def __init__(self, db):
+        """Initialize reservation service and package controller."""
         self.reservation_service = ReservationService(db)
         self.package_controller = PackageController(db)
 
     def _tabulate_reservations(self, reservations):
+        """Format reservation data for display."""
         headers = ["ID", "Usuario ID", "Paquete ID", "Fecha de reserva", "Estado"]
         table = []
         for reservation in reservations:
@@ -27,6 +33,7 @@ class ReservationController:
         return tabulate(table, headers, tablefmt="grid")
 
     def _input_reservation_data(self):
+        """Collect reservation details through CLI prompts."""
         print("---Sistema de reservas---")
         self.package_controller.list_packages()
         package_id = int(input("Escribe el id del paquete turistico a reservar: ").strip())
@@ -36,6 +43,7 @@ class ReservationController:
         return reservation_data
 
     def create_reservation(self, user_id):
+        """Create a reservation for the provided user."""
         reservation_data = self._input_reservation_data()
 
         reservation_data["user_id"] = user_id
@@ -50,8 +58,8 @@ class ReservationController:
         print("Reserva creada exitosamente")
         return reservation_id
 
-
     def list_reservations_by_user(self, user_id):
+        """List reservations tied to a specific user."""
         try:
             reservations = self.reservation_service.get_reservations_by_user(user_id)
             table = self._tabulate_reservations(reservations)

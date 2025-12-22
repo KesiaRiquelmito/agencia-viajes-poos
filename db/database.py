@@ -1,14 +1,20 @@
+"""Simple MySQL access layer and schema bootstrap."""
+
 import sys
 import mysql.connector
 from mysql.connector import Error
 
 
 class Database:
+    """Provide connection helpers plus schema creation."""
+
     def __init__(self):
+        """Connect to DB and ensure schema exists."""
         self.connection, self.cursor = self.get_connection()
         self._create_schema()
 
     def get_connection(self):
+        """Create a connection and cursor to MySQL."""
         try:
             connection = mysql.connector.connect(
                 user="root",
@@ -24,6 +30,7 @@ class Database:
             sys.exit(1)
 
     def _create_schema(self):
+        """Run SQL statements to ensure tables exist."""
         stmts = [
             """
             CREATE TABLE IF NOT EXISTS users
@@ -183,12 +190,14 @@ class Database:
         print("Base de datos y tablas creadas correctamente.")
 
     def execute(self, query, params=()):
+        """Run a mutation query and return cursor."""
         cursor = self.connection.cursor()
         cursor.execute(query, params)
         self.connection.commit()
         return cursor
 
     def fetch_all(self, query, params=()):
+        """Execute a SELECT statement and return rows."""
         cursor = self.connection.cursor()
         cursor.execute(query, params)
         return cursor.fetchall()

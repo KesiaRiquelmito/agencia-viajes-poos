@@ -1,11 +1,17 @@
+"""DAO for package persistence and relations."""
+
 from exceptions.database import AlreadyExistsError, DatabaseError
 
 
 class PackageDAO:
+    """Persist packages and link them with destinations."""
+
     def __init__(self, db_connection):
+        """Initialize storage layer."""
         self.db_connection = db_connection
 
     def save(self, package, destination_ids):
+        """Insert a package and create destination relationships."""
         name = package.name
         start_date = package.start_date
         end_date = package.end_date
@@ -32,6 +38,7 @@ class PackageDAO:
             raise
 
     def get_all(self):
+        """Fetch every package row."""
         try:
             return self.db_connection.fetch_all(
                 "SELECT id, name, start_date, end_date, total_price FROM package"
@@ -40,6 +47,7 @@ class PackageDAO:
             raise
 
     def get_destinations_by_package_id(self, package_id: int):
+        """Return destination names linked to the given package."""
         try:
             rows = self.db_connection.fetch_all(
                 "SELECT d.name FROM package_destinations pd JOIN destinations d ON d.id = pd.destination_id WHERE pd.package_id = %s", (package_id,),

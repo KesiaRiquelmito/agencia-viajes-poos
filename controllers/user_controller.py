@@ -1,3 +1,5 @@
+"""Controller handling user authentication flows."""
+
 import bcrypt
 import pwinput
 
@@ -6,10 +8,14 @@ from services.user_service import UserService
 
 
 class UserController:
+    """Expose registration and login actions."""
+
     def __init__(self, db):
+        """Initialize controller with the user service."""
         self.user_service = UserService(db)
 
     def _validate_data(self, data):
+        """Ensure user registration payload respects rules."""
         valid_roles = ["admin", "user"]
 
         if not data["name"]:
@@ -33,6 +39,7 @@ class UserController:
         return True
 
     def register_user(self):
+        """Prompt for and register a new user."""
         print("Registrar usuario")
         name = input("Nombre: ").strip()
         last_name = input("Apellido: ").strip()
@@ -64,6 +71,7 @@ class UserController:
         return user_id
 
     def signin(self):
+        """Authenticate an existing user."""
         print("---Inicio de sesión---")
         email = input("Ingresa tu email: ")
         password = pwinput.pwinput("Ingresa tu contraseña: ", mask="*")

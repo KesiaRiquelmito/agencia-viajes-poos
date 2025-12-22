@@ -1,12 +1,18 @@
+"""Package service providing persistence orchestration."""
+
 from dao.package_dao import PackageDAO
 from models.tourist_package import TouristPackage
 
 
 class PackageService:
+    """Wrap DAO calls for tourist packages."""
+
     def __init__(self, db):
+        """Create DAO using provided connection."""
         self.package_dao = PackageDAO(db)
 
     def create_package(self, package_data):
+        """Persist a new package and related destinations."""
         package = TouristPackage(
             package_data["name"],
             package_data["start_date"],
@@ -16,6 +22,7 @@ class PackageService:
         return self.package_dao.save(package, package_data["destinations"])
 
     def get_packages_summary(self):
+        """Return friendly data for CLI listing."""
         packages = self.package_dao.get_all()
         result = []
 

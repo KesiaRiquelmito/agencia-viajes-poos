@@ -1,3 +1,5 @@
+"""Controller layer for destination CLI operations."""
+
 import json
 
 from exceptions.database import DatabaseError, AlreadyExistsError, DestinationNotFound, DeletionNotCompleted
@@ -6,10 +8,14 @@ from tabulate import tabulate
 
 
 class DestinationController:
+    """Handle user interactions related to destinations."""
+
     def __init__(self, db):
+        """Initialize the controller with its backing service."""
         self.destination_service = DestinationService(db)
 
     def _validate_data(self, data):
+        """Validate CLI input for a destination before persisting it."""
         if not data["name"] or not data["description"]:
             print("Nombre y descripción son obligatorios.")
             return False
@@ -22,6 +28,7 @@ class DestinationController:
         return True
 
     def _tabulate_data(self, data):
+        """Format a list of destinations into a printable table string."""
         headers = ["ID", "Nombre", "Descripción", "Actividades", "Costo"]
         table = []
         for dest in data:
@@ -35,6 +42,7 @@ class DestinationController:
         return tabulate(table, headers, tablefmt="grid")
 
     def _input_destination_data(self):
+        """Collect destination attributes from user input."""
         name = input("Ingrese el nombre del destino: ").strip()
         description = input("Ingrese la descripción del destino: ").strip()
 
@@ -56,6 +64,7 @@ class DestinationController:
         return destination_data
 
     def update_destination(self):
+        """Interactive flow to update a destination record."""
         self.list_destinations()
         target = int(input("Ingrese el ID del destino que desea actualizar: ").strip())
         destination_data = self._input_destination_data()
@@ -73,6 +82,7 @@ class DestinationController:
         return updated
 
     def create_destination(self):
+        """Interactive flow to create a new destination."""
         destination_data = self._input_destination_data()
 
         try:
@@ -88,6 +98,7 @@ class DestinationController:
         return destination_id
 
     def delete_destination(self):
+        """Interactive flow to delete an existing destination."""
         self.list_destinations()
         destination_id = int(input("Ingrese el ID del destino que desea eliminar").strip())
         try:
@@ -105,6 +116,7 @@ class DestinationController:
         return deleted
 
     def list_destinations(self):
+        """Print all destinations available in the system."""
         try:
             destinations = self.destination_service.get_all_destinations()
         except DatabaseError:

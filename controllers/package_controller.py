@@ -1,3 +1,5 @@
+"""Controller for tourist package orchestration."""
+
 from datetime import datetime
 
 from tabulate import tabulate
@@ -8,11 +10,15 @@ from services.package_service import PackageService
 
 
 class PackageController:
+    """Manage package creation, validation, and listing flows."""
+
     def __init__(self, db):
+        """Initialize dependent services for package operations."""
         self.package_service = PackageService(db)
         self.destination_service = DestinationService(db)
 
     def _validate_data(self, data):
+        """Ensure collected package data has mandatory values."""
         if not data["name"]:
             print("Error: el nombre es obligatorio para crear un paquete turistico")
             return False
@@ -22,6 +28,7 @@ class PackageController:
         return True
 
     def _tabulate_data(self, data):
+        """Render packages into a table for CLI output."""
         headers = ["ID", "Nombre", "Fecha inicio", "Fecha termino", "Destinos", "Precio total"]
         table = []
         for package in data:
@@ -39,6 +46,7 @@ class PackageController:
         return tabulate(table, headers, tablefmt="grid")
 
     def _input_package_data(self):
+        """Collect package fields from the CLI and compute totals."""
         name = input("Ingrese el nombre del paquete turistico: ").strip()
         start_date = datetime.strptime(input("Fecha inicio (dd-mm-YYYY): "), "%d-%m-%Y").date()
         end_date = datetime.strptime(input("Ingrese la fecha de termino (dd-mm-YYYY): "), "%d-%m-%Y").date()
@@ -70,6 +78,7 @@ class PackageController:
         return package_data
 
     def create_package(self):
+        """Prompt for package data and persist it via the service."""
         package_data = self._input_package_data()
 
         try:
@@ -84,6 +93,7 @@ class PackageController:
         return package_id
 
     def list_packages(self):
+        """List package summaries ready for reservation."""
         try:
             print("---Paquetes disponibles para reservas---")
             packages = self.package_service.get_packages_summary()

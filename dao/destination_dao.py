@@ -1,3 +1,5 @@
+"""Persistence helpers for destinations."""
+
 import json
 
 from exceptions.database import DatabaseError, AlreadyExistsError, DestinationNotFound, DeletionNotCompleted
@@ -5,10 +7,14 @@ from models.destination import Destination
 
 
 class DestinationDAO:
+    """Provide CRUD operations for Destination entities."""
+
     def __init__(self, db_connection):
+        """Store DB connection layer."""
         self.db_connection = db_connection
 
     def get_all(self):
+        """Return every destination row as model instances."""
         try:
             rows = self.db_connection.fetch_all("SELECT id, name, description, activities, cost FROM destinations")
             destinations = []
@@ -30,6 +36,7 @@ class DestinationDAO:
             raise
 
     def update(self, destination_id, destination: Destination):
+        """Update the target destination with new details."""
         try:
             existent_destination = self.db_connection.fetch_all(
                 "SELECT id FROM destinations WHERE id=%s",
@@ -46,6 +53,7 @@ class DestinationDAO:
             raise
 
     def delete(self, destination_id):
+        """Delete destination by id raising domain errors if needed."""
         try:
             exists = self.db_connection.fetch_all(
                 "SELECT id FROM destinations WHERE id = %s", (destination_id,)
@@ -63,6 +71,7 @@ class DestinationDAO:
             raise
 
     def save(self, destination: Destination):
+        """Persist a new destination and return its id."""
         name = destination.name
         description = destination.description
         activities = destination.activities

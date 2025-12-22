@@ -1,12 +1,18 @@
+"""Reservation DAO for CRUD operations."""
+
 from exceptions.database import DatabaseError, ReservationNotFound
 from models.reservation import Reservation
 
 
 class ReservationDAO:
+    """Encapsulate persistence logic for reservations."""
+
     def __init__(self, db_connection):
+        """Store DB connection."""
         self.db_connection = db_connection
 
     def get_reservations_by_user(self, user_id: int):
+        """List reservations for a user id."""
         try:
             rows = self.db_connection.fetch_all(
                 "SELECT id, user_id, package_id, reservation_date, status FROM reservations WHERE user_id = %s",
@@ -29,6 +35,7 @@ class ReservationDAO:
             raise
 
     def save(self, reservation: Reservation):
+        """Insert a reservation record and return its id."""
         user_id = reservation.user_id
         package_id = reservation.package_id
         reservation_date = reservation.reservation_date
