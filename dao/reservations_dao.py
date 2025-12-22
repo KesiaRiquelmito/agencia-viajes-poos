@@ -1,6 +1,6 @@
 """Reservation DAO for CRUD operations."""
 
-from exceptions.database import DatabaseError, ReservationNotFound
+from exceptions.database import DatabaseError, ReservationNotFound, AlreadyExistsError
 from models.reservation import Reservation
 
 
@@ -42,6 +42,12 @@ class ReservationDAO:
         status = reservation.status
 
         try:
+            exists = self.db_connection.fetch_all(
+                "SELECT id FROM reservations WHERE user_id = %s AND package_id = %s",
+                (user_id, package_id),
+            )
+            if exists:
+                raise AlreadyExistsError
             cursor = self.db_connection.execute(
                 "INSERT INTO reservations (user_id, package_id, reservation_date, status) VALUES (%s, %s, %s, %s)",
                 (user_id, package_id, reservation_date, status),

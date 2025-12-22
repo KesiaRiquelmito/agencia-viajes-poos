@@ -5,7 +5,7 @@ from datetime import date
 from tabulate import tabulate
 
 from controllers.package_controller import PackageController
-from exceptions.database import DatabaseError
+from exceptions.database import DatabaseError, AlreadyExistsError
 from exceptions.database import ReservationNotFound
 from services.reservation_service import ReservationService
 
@@ -51,6 +51,9 @@ class ReservationController:
             reservation_id = self.reservation_service.create_reservation(reservation_data)
         except DatabaseError:
             print("No se pudo crear la reserva debido a un error en la base de datos")
+            return None
+        except AlreadyExistsError:
+            print("Ya existe una reserva para este paquete y usuario")
             return None
         if not reservation_id:
             print("No se pudo crear la reserva (paquete no existe o datos invalidos")
